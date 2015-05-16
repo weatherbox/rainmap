@@ -9,7 +9,8 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 	options: {
 		url: "http://www.jma.go.jp/jp/highresorad/highresorad_tile/HRKSNC/",
 		bounds: L.latLngBounds([7, 100], [61, 170]),
-		zoom: [2, 4, 6]
+		zoom: [2, 4, 6],
+		opacity: 0.7
 	},
 	
 	initialize: function (options) {
@@ -18,8 +19,11 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 
 	getTileUrl: function(tilePoint){
 		console.log(tilePoint);
-		return this.options.url + "201505131635/201505131635/" +     //TODO time
-			"zoom" + tilePoint.z + "/" + tilePoint.x + "_" + tilePoint.y + ".png";
+	//	return this.options.url + "201505131635/201505131635/" +     //TODO time
+	//		"zoom" + tilePoint.z + "/" + tilePoint.x + "_" + tilePoint.y + ".png";
+		
+		// for debug
+		return "http://fakeimg.pl/256x256/" + randomColor().slice(1) + "/";
 	},
 	
 
