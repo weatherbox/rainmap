@@ -1,14 +1,15 @@
 /**
- * L.TileLayer.JMANowCast
+ * L.TileLayer.JMANowcast
  *
- *
+ * 2015.05.17 Yuta Tachibana
  */
 
 
 L.TileLayer.JMANowcast = L.TileLayer.extend({
 	options: {
-
-
+		url: "http://www.jma.go.jp/jp/highresorad/highresorad_tile/HRKSNC/",
+		bounds: L.latLngBounds([7, 100], [61, 170]),
+		zoom: [2, 4, 6]
 	},
 	
 	initialize: function (options) {
@@ -17,26 +18,43 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 
 	getTileUrl: function(tilePoint){
 		console.log(tilePoint);
-		return "http://www.jma.go.jp/jp/highresorad/highresorad_tile/HRKSNC/201505131635/201505131635/zoom2/2_1.png";
+		return this.options.url + "201505131635/201505131635/" +     //TODO time
+			"zoom" + tilePoint.z + "/" + tilePoint.x + "_" + tilePoint.y + ".png";
 	},
 	
 
-	// overide
+	// overides ---------------------------------------------------------------
 	_update: function () {
 		if (!this._map) { return; }
 
 		var map = this._map,
-		    bounds = map.getPixelBounds(),
-		    zoom = map.getZoom(),
-		    tileSize = this._getTileSize();
+		    bounds = map.getBounds(),
+		    zoom = map.getZoom();
 
 		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
 			return;
 		}
 
-		var tileBounds = L.bounds(
-		        bounds.min.divideBy(tileSize)._floor(),
-		        bounds.max.divideBy(tileSize)._floor());
+		this._correspondedZoom = (zoom <= 4) ? 2
+		                       : (zoom <= 6) ? 4
+		                                     : 6;
+
+		var box = this.options.bounds,
+			num_tiles = Math.pow(2, this._correspondedZoom);
+
+		this._tile_lat = (box.getNorth() - box.getSouth()) / num_tiles,
+		this._tile_lon = (box.getEast() - box.getWest()) / num_tiles;
+
+		var p1 = L.point(
+			Math.max(0, Math.floor((bounds.getWest() - box.getWest()) / this._tile_lon )),
+			Math.max(0, Math.floor((box.getNorth() - bounds.getNorth()) / this._tile_lat ))
+		);
+		var p2 = L.point(
+			Math.min(num_tiles, Math.floor((bounds.getEast() - box.getWest()) / this._tile_lon )),
+			Math.min(num_tiles, Math.floor((box.getNorth() - bounds.getSouth()) / this._tile_lat ))
+		);
+		var tileBounds = L.bounds(p1, p2);
+
 
 		this._addTilesFromCenterOut(tileBounds);
 
@@ -49,60 +67,52 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 		if ((tilePoint.x + ':' + tilePoint.y) in this._tiles) {
 			return false; // already loaded
 		}
-
-		var options = this.options;
-
-		if (!options.continuousWorld) {
-			var limit = this._getWrapTileNum();
-
-			// don't load if exceeds world bounds
-			if ((options.noWrap && (tilePoint.x < 0 || tilePoint.x >= limit.x)) ||
-				tilePoint.y < 0 || tilePoint.y >= limit.y) { return false; }
-		}
-
-		if (options.bounds) {
-			var tileSize = options.tileSize,
-			    nwPoint = tilePoint.multiplyBy(tileSize),
-			    sePoint = nwPoint.add([tileSize, tileSize]),
-			    nw = this._map.unproject(nwPoint),
-			    se = this._map.unproject(sePoint);
-
-			// TODO temporary hack, will be removed after refactoring projections
-			// https://github.com/Leaflet/Leaflet/issues/1618
-			if (!options.continuousWorld && !options.noWrap) {
-				nw = nw.wrap();
-				se = se.wrap();
-			}
-
-			if (!options.bounds.intersects([nw, se])) { return false; }
-		}
-
 		return true;
 	},
 
-	_getTilePos: function (tilePoint) {
-		var origin = this._map.getPixelOrigin(),
-		    tileSize = this._getTileSize();
+	_addTile: function (tilePoint, container) {
+		tilePoint.z  = this._correspondedZoom;
+		var tilePosNW = this._getTilePos(tilePoint.x, tilePoint.y);
+		var tilePosSE = this._getTilePos(tilePoint.x + 1, tilePoint.y - 1);
 
-		return tilePoint.multiplyBy(tileSize).subtract(origin);
-	},
+		var origin = this._map.getPixelOrigin();
+		var tilePos = tilePosNW.subtract(origin);
 
-	_getTileSize: function () {
-		var map = this._map,
-		    zoom = map.getZoom() + this.options.zoomOffset,
-		    zoomN = this.options.maxNativeZoom,
-		    tileSize = this.options.tileSize;
+		var width = tilePosSE.x - tilePosNW.x;
+		var height = tilePosNW.y - tilePosSE.y;
+	
+		var tile = this._getTile(width, height);
 
-		if (zoomN && zoom > zoomN) {
-			tileSize = Math.round(map.getZoomScale(zoom) / map.getZoomScale(zoomN) * tileSize);
+		/*
+		Chrome 20 layouts much faster with top/left (verify with timeline, frames)
+		Android 4 browser has display issues with top/left and requires transform instead
+		(other browsers don't currently care) - see debug/hacks/jitter.html for an example
+		*/
+		L.DomUtil.setPosition(tile, tilePos, L.Browser.chrome);
+
+		this._tiles[tilePoint.x + ':' + tilePoint.y] = tile;
+
+		this._loadTile(tile, tilePoint);
+
+		if (tile.parentNode !== this._tileContainer) {
+			container.appendChild(tile);
 		}
-
-		return tileSize;
 	},
 
-	_createTile: function () {
+	_getTilePos: function (x, y) {
+		// tiles top left point
+		var map = this._map,
+			box = this.options.bounds,
+			lat = box.getNorth() - this._tile_lat * y,
+			lon = box.getWest() + this._tile_lon * x;
+
+		return map.project([lat, lon]);
+	},
+
+	_createTile: function (width, height) {
 		var tile = L.DomUtil.create('img', 'leaflet-tile');
-		tile.style.width = tile.style.height = this._getTileSize() + 'px';
+		tile.style.width = width; 
+		tile.style.height = height;
 		tile.galleryimg = 'no';
 
 		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
@@ -117,6 +127,19 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 		}
 		return tile;
 	},
+
+	_loadTile: function (tile, tilePoint) {
+		tile._layer  = this;
+		tile.onload  = this._tileOnLoad;
+		tile.onerror = this._tileOnError;
+		tile.src     = this.getTileUrl(tilePoint);
+
+		this.fire('tileloadstart', {
+			tile: tile,
+			url: tile.src
+		});
+	}
+
 });
 
 
