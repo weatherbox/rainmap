@@ -1,5 +1,5 @@
 /**
- * L.TileLayer.JMANowcast
+ * L.TileLayer.JMANowcast - display JMA Nowcast tiles
  *
  * 2015.05.17 Yuta Tachibana
  */
@@ -7,27 +7,31 @@
 
 L.TileLayer.JMANowcast = L.TileLayer.extend({
 	options: {
-		url: "http://www.jma.go.jp/jp/highresorad/highresorad_tile/HRKSNC/",
 		bounds: L.latLngBounds([7, 100], [61, 170]),
 		zoom: [2, 4, 6],
+		correspondedZoom: function(zoom) {
+			return (zoom <= 4) ? 2
+		         : (zoom <= 6) ? 4
+		                       : 6;
+		},
 		opacity: 0.7
 	},
 	
-	initialize: function (options) {
+	initialize: function (url, options) {
+		this.options.url = url;
 		options = L.setOptions(this, options);
 	},
 
 	getTileUrl: function(tilePoint){
-		console.log(tilePoint);
-	//	return this.options.url + "201505131635/201505131635/" +     //TODO time
-	//		"zoom" + tilePoint.z + "/" + tilePoint.x + "_" + tilePoint.y + ".png";
-		
-		// for debug
-		return "http://fakeimg.pl/256x256/" + randomColor().slice(1) + "/";
+		return this.options.url + "zoom" + tilePoint.z + "/" + tilePoint.x + "_" + tilePoint.y + ".png";
 	},
 	
 
-	// overides ---------------------------------------------------------------
+	/**
+	 *  Override functions
+	 *
+	 *  equirectangular projection -> spherical mercator
+	 */
 	_update: function () {
 		if (!this._map) { return; }
 
@@ -39,10 +43,7 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 			return;
 		}
 
-		this._correspondedZoom = (zoom <= 4) ? 2
-		                       : (zoom <= 6) ? 4
-		                                     : 6;
-
+		this._correspondedZoom = this.options.correspondedZoom(zoom);
 		var box = this.options.bounds,
 			num_tiles = Math.pow(2, this._correspondedZoom);
 
@@ -157,5 +158,5 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 
 
 L.tileLayer.JMANowcast = function (url, options) {
-	return new L.TileLayer.JMANowcast(options);
+	return new L.TileLayer.JMANowcast(url, options);
 };

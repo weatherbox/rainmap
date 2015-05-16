@@ -12,9 +12,6 @@
 	<body>
 		<div id="map"></div>
 
-		<!-- for debug -->
-		<script src="randomColor.js"></script>
-
 		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 		<script src="L.TileLayer.JMANowcast.js"></script>
 		<script>
@@ -24,7 +21,9 @@
 				'http://mt0.google.com/vt/lyrs=m@121&hl=ja&x={x}&y={y}&z={z}'
 			).addTo(map);
 
-			var nowcast = L.tileLayer.JMANowcast().addTo(map);
+			var nowcast = L.tileLayer.JMANowcast(
+				"http://www.jma.go.jp/jp/highresorad/highresorad_tile/HRKSNC/201505131635/201505131635/"
+			).addTo(map);
 
 		</script>
 	</body>
