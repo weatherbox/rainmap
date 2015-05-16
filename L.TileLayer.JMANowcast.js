@@ -54,8 +54,8 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 			Math.max(0, Math.floor((box.getNorth() - bounds.getNorth()) / this._tile_lat ))
 		);
 		var p2 = L.point(
-			Math.min(num_tiles, Math.floor((bounds.getEast() - box.getWest()) / this._tile_lon )),
-			Math.min(num_tiles, Math.floor((box.getNorth() - bounds.getSouth()) / this._tile_lat ))
+			Math.min(num_tiles-1, Math.floor((bounds.getEast() - box.getWest()) / this._tile_lon )),
+			Math.min(num_tiles-1, Math.floor((box.getNorth() - bounds.getSouth()) / this._tile_lat ))
 		);
 		var tileBounds = L.bounds(p1, p2);
 
@@ -77,13 +77,13 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 	_addTile: function (tilePoint, container) {
 		tilePoint.z  = this._correspondedZoom;
 		var tilePosNW = this._getTilePos(tilePoint.x, tilePoint.y);
-		var tilePosSE = this._getTilePos(tilePoint.x + 1, tilePoint.y - 1);
+		var tilePosSE = this._getTilePos(tilePoint.x + 1, tilePoint.y + 1);
 
 		var origin = this._map.getPixelOrigin();
 		var tilePos = tilePosNW.subtract(origin);
 
 		var width = tilePosSE.x - tilePosNW.x;
-		var height = tilePosNW.y - tilePosSE.y;
+		var height = tilePosSE.y - tilePosNW.y;
 	
 		var tile = this._getTile(width, height);
 
@@ -113,10 +113,19 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 		return map.project([lat, lon]);
 	},
 
+	_getTile: function (width, height) {
+		if (this.options.reuseTiles && this._unusedTiles.length > 0) {
+			var tile = this._unusedTiles.pop();
+			this._resetTile(tile);
+			return tile;
+		}
+		return this._createTile(width, height);
+	},
+
 	_createTile: function (width, height) {
 		var tile = L.DomUtil.create('img', 'leaflet-tile');
-		tile.style.width = width; 
-		tile.style.height = height;
+		tile.style.width = width + "px"; 
+		tile.style.height = height + "px";
 		tile.galleryimg = 'no';
 
 		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
