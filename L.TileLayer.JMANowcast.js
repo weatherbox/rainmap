@@ -1,5 +1,6 @@
 /**
  * L.TileLayer.JMANowcast - display JMA Nowcast tiles
+ *   for leaflet.js v0.7.3
  *
  * 2015.05.17 Yuta Tachibana
  */
@@ -83,10 +84,10 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 		var origin = this._map.getPixelOrigin();
 		var tilePos = tilePosNW.subtract(origin);
 
+		// does not fixed tile size
 		var width = tilePosSE.x - tilePosNW.x;
 		var height = tilePosSE.y - tilePosNW.y;
-	
-		var tile = this._getTile(width, height);
+		var tile = this._createTile(width, height);
 
 		/*
 		Chrome 20 layouts much faster with top/left (verify with timeline, frames)
@@ -105,22 +106,13 @@ L.TileLayer.JMANowcast = L.TileLayer.extend({
 	},
 
 	_getTilePos: function (x, y) {
-		// tiles top left point
+		// top left point of the tile
 		var map = this._map,
 			box = this.options.bounds,
 			lat = box.getNorth() - this._tile_lat * y,
 			lon = box.getWest() + this._tile_lon * x;
 
 		return map.project([lat, lon]);
-	},
-
-	_getTile: function (width, height) {
-		if (this.options.reuseTiles && this._unusedTiles.length > 0) {
-			var tile = this._unusedTiles.pop();
-			this._resetTile(tile);
-			return tile;
-		}
-		return this._createTile(width, height);
 	},
 
 	_createTile: function (width, height) {
