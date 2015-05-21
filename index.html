@@ -3,29 +3,57 @@
 	<head>
 		<title>High-resolution Precipitation Nowcasts</title>
 		<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
 		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="//rawgithub.com/domoritz/leaflet-locatecontrol/gh-pages/dist/L.Control.Locate.min.css" />
 		<style>
 			body { margin:0; padding:0; }
-			#map { position:absolute; top:0; bottom:0; width:100%;  }
+			#map { position:absolute; top:64px; bottom:0; width:100%; }
 		</style>
 	</head>
 	<body>
+		<nav>
+			<div class="nav-wrapper light-blue accent-3">
+				<a href="#" data-activates="slide-out" class="button-collapse show-on-large"><i class="mdi-navigation-menu"></i></a>
+				<a href="#" class="brand-logo">Logo</a>
+				<ul id="nav-mobile" class="right hide-on-med-and-down">
+					<li><a href="sass.html">Sass</a></li>
+					<li><a href="components.html">Components</a></li>
+					<li><a href="javascript.html">JavaScript</a></li>
+				</ul>
+			</div>
+		</nav>
+
 		<div id="map"></div>
 
+		<div id="footer">
+			<form action="#">
+				<p class="range-field">
+				<input type="range" id="test5" min="-0:30" max="1:00" />
+				</p>
+			</form>
+		</div>
+
+
+		<ul id="slide-out" class="side-nav">
+			<li><a href="#!">First Sidebar Link</a></li>
+			<li><a href="#!">Second Sidebar Link</a></li>
+		</ul>
+
+
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/js/materialize.min.js"></script>
 		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-		<script src="//rawgithub.com/domoritz/leaflet-locatecontrol/gh-pages/dist/L.Control.Locate.min.js" ></script>
 		<script src="L.TileLayer.JMANowcast.js"></script>
 		<script>
+		$(function(){
+			$(".button-collapse").sideNav();
+
 			var map = new L.Map('map', {center: new L.LatLng(37.892, 137.571), zoom: 6});
 
 			var google = L.tileLayer(
 				'http://mt0.google.com/vt/lyrs=m@121&hl=ja&x={x}&y={y}&z={z}'
 			).addTo(map);
 		
-			L.control.locate().addTo(map);
-
 			var date = new Date(Date.now() - 5*60*1000); // 5 minutes before
 			var refTime = date.getUTCFullYear() + pad(date.getUTCMonth()+1) + pad(date.getUTCDate()) + pad(date.getUTCHours()) + pad(Math.floor(date.getUTCMinutes()/5)*5);
 
@@ -39,6 +67,7 @@
 			function pad(d){
 				return ("0" + d).slice(-2);
 			}
+		});
 		</script>
 	</body>
 </html>
