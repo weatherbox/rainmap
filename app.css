@@ -1,0 +1,18 @@
+body {
+	font-family: sans-serif;
+}
+core-header-panel {
+	background: white;
+}
+core-toolbar {
+	background-color: #00b0ff; /* light-blue accent-3 */
+	color: #fff;
+}
+
+
+/* map */
+#map {
+	position: absolute;
+	top: 0; bottom: 0;
+	width: 100%;
+}

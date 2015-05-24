@@ -1,0 +1,28 @@
+{
+  "name": "rainmap",
+  "version": "0.0.0",
+  "homepage": "https://github.com/tattii/rainmap",
+  "authors": [
+    "tattii <yuta.tatti@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#0.5.6",
+    "core-header-panel": "Polymer/core-header-panel#0.5.6",
+    "core-icon": "Polymer/core-icon#0.5.6",
+    "core-icons": "Polymer/core-icons#0.5.6",
+    "core-toolbar": "Polymer/core-toolbar#0.5.6",
+    "paper-icon-button": "Polymer/paper-icon-button#0.5.6",
+    "core-scaffold": "Polymer/core-scaffold#0.5.6",
+    "core-menu": "Polymer/core-menu#0.5.6",
+    "paper-slider": "Polymer/paper-slider#0.5.6",
+    "core-drawer-panel": "Polymer/core-drawer-panel#0.5.6"
+  }
+}
