@@ -16,3 +16,32 @@ core-toolbar {
 	top: 0; bottom: 0;
 	width: 100%;
 }
+
+
+#footer {
+	background: white;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+}
+
+paper-slider {
+	width: 100%;
+}
+
+
+#location {
+	position: absolute;
+	right: 16px;
+	bottom: 126px;
+	background: white;
+	color: #3D5AFE;
+}
+
+#play {
+	position: absolute;
+	right: 16px;
+	bottom: 54px;
+	background: #3D5AFE;
+	color: white;
+}

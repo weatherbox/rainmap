@@ -23,6 +23,8 @@
     "core-scaffold": "Polymer/core-scaffold#0.5.6",
     "core-menu": "Polymer/core-menu#0.5.6",
     "paper-slider": "Polymer/paper-slider#0.5.6",
-    "core-drawer-panel": "Polymer/core-drawer-panel#0.5.6"
+    "core-drawer-panel": "Polymer/core-drawer-panel#0.5.6",
+    "paper-shadow": "Polymer/paper-shadow#0.5.6",
+    "paper-fab": "Polymer/paper-fab#0.5.6"
   }
 }
