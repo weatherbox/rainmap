@@ -15,8 +15,9 @@ function index(file, callback) {
         
         em.on("data", function(data) {
     
-            console.log(JSON.stringify(data, null, 2))
-            indexify(fd, indexes, data.section0.stats.end)
+            //console.log(JSON.stringify(data, null, 2))
+			callback(null, data)
+            //indexify(fd, indexes, data.section0.stats.end)
         })
         em.on("error", function(err) {
             callback(err)
@@ -81,10 +82,10 @@ function indexify(fd, indexes, index) {
                                             section7: section7
                                             //section8: section8
                                         }
-                                        fs.read(fd, new Buffer(section7.stats.length-4), 0, section7.stats.length-4, section7.stats.start+5, function(err, bytesRead, buffer) {
-                                            /*section7.data = */ComUnpack.comunpack(buffer,bytesRead,section5.dataRepresentationTemplateNumber,section5.dataRepresentationTemplate,section5.numberOfDataPoints)
+                                        //fs.read(fd, new Buffer(section7.stats.length-4), 0, section7.stats.length-4, section7.stats.start+5, function(err, bytesRead, buffer) {
+                                        //  /*section7.data = */ComUnpack.comunpack(buffer,bytesRead,section5.dataRepresentationTemplateNumber,section5.dataRepresentationTemplate,section5.numberOfDataPoints)
                                             em.emit("data", sequence)
-                                        })
+                                       // })
                                     })
                                 })
                             })
