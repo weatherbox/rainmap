@@ -1,12 +1,13 @@
 /*
  * decode run-length compressed data
  *
- * 	JMA styled run-length encoding
- *		LNGU = s ^ NBIT - MAXV - 1
- *		RL_n = LNGU ^ (n-1) * (data_n - NAXV - 1)
- *		RL = ΣRL_i + 1
- *	ref. http://www.data.jma.go.jp/add/suishin/jyouhou/pdf/108.pdf
+ *  JMA styled run-length encoding
+ *    LNGU = s ^ NBIT - MAXV - 1
+ *    RL_n = LNGU ^ (n-1) * (data_n - NAXV - 1)
+ *    RL = ΣRL_i + 1
+ *  ref. http://www.data.jma.go.jp/add/suishin/jyouhou/pdf/108.pdf
  *
+ *  2015.09.09 Yuta Tachibana
  **/
 function decode_runlength_compress(buffer, nbit, maxv){
 	var bin_data = new Unit8Array(2560*3360);
