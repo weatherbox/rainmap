@@ -314,6 +314,8 @@ function readSection5(fd, startOfSection, callback) {
             section5.numberOfDataPoints = buffer.readUInt32BE(5)
             section5.dataRepresentationTemplateNumber = buffer.readUInt16BE(9)
             section5.dataRepresentationTemplate = Grib2Templates.readTemplate(5, section5.dataRepresentationTemplateNumber, buffer)
+			section5.nbit = buffer.readUInt8(11)
+			section5.maxv = buffer.readUInt16BE(12)
 
             callback(undefined, section5)
         })
