@@ -14,7 +14,7 @@ Grib2.index(process.argv[2], function(err, index){
 		if(err) throw err;
 		fs.read(fd, new Buffer(data_length), 0, data_length, data_start, function(err, bytesRead, buffer) {
 			if(err) throw err;
-			var bin_data = rle.decode(buffer, 8, index.section5.maxv);
+			var bin_data = rle.decode_with_level_packing(buffer, 8, index.section5.maxv, index.section5.levelValues);
 			fs.open("radar.bin", "w", function(err, out){
 				fs.write(out, bin_data, 0, bin_data.length, 0, function(err){
 					if(err) throw err;

@@ -314,8 +314,17 @@ function readSection5(fd, startOfSection, callback) {
             section5.numberOfDataPoints = buffer.readUInt32BE(5)
             section5.dataRepresentationTemplateNumber = buffer.readUInt16BE(9)
             section5.dataRepresentationTemplate = Grib2Templates.readTemplate(5, section5.dataRepresentationTemplateNumber, buffer)
+
+			// Template 5.200
 			section5.nbit = buffer.readUInt8(11)
 			section5.maxv = buffer.readUInt16BE(12)
+			section5.maxLevel = buffer.readUInt16BE(14)
+			section5.scaleFactor = buffer.readUInt8(16)
+			section5.levelValues = []
+			section5.levelValues[0] = Math.pow(2, 16) - 1  // null value
+			for(var i=1; i < section5.maxLevel; i++) {
+				section5.levelValues[i] = buffer.readUInt16BE(15 + 2*i)
+			}
 
             callback(undefined, section5)
         })
