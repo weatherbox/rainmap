@@ -23,4 +23,25 @@ Grib2.index(process.argv[2], function(err, index){
 		});
 	});
 
-})
+});
+
+
+
+var tile_prefix = "data/tiles";
+
+function makeTiles(bin_data) {
+
+	for(var lon = 47; lon >= 20; lon--){
+		for(var lat = 118; lat < 150; lat++){
+			var tile_name = tile_prefix + "/" + lon + "/" + lat + ".bin";
+			fs.open(tile_name, "w", function(err, fd) {
+				if(err) throw err;
+				fs.write(fd, bin_data, offset, length, position, function(err){
+					if(err) throw err;
+				});
+
+			});
+
+		}
+	}
+}
