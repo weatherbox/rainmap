@@ -20,6 +20,7 @@ Grib2.index(process.argv[2], function(err, index){
 					if(err) throw err;
 				});
 			});
+			makeTiles(bin_data);
 		});
 	});
 
@@ -31,17 +32,19 @@ var tile_prefix = "data/tiles";
 
 function makeTiles(bin_data) {
 
-	for(var lon = 47; lon >= 20; lon--){
-		for(var lat = 118; lat < 150; lat++){
-			var tile_name = tile_prefix + "/" + lon + "/" + lat + ".bin";
-			fs.open(tile_name, "w", function(err, fd) {
-				if(err) throw err;
-				fs.write(fd, bin_data, offset, length, position, function(err){
-					if(err) throw err;
-				});
+	for(var lat = 48; lat > 20; lat--){
+		for(var lon = 118; lon < 150; lon++){
+			var tile_name = tile_prefix + "/" + lat + "_" + lon + ".bin";
+			var fd = fs.openSync(tile_name, "w");
 
-			});
+			for(var l = 0; l < 120; l++){
+				var offset = 2560 * (120 * (48 - lat) + l) + 80 * (lon - 118);
+				var length = 80;
+				var position = 80 * l;
+				fs.writeSync(fd, bin_data, offset*2, length*2, position*2);
+			}
 
+			fs.closeSync(fd);
 		}
 	}
 }
