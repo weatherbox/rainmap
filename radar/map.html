@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>High-resolution Precipitation Nowcasts</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.css" />
+	<style>
+		body { margin:0; padding:0; }
+		#map { position:absolute; top:0; bottom:0; width:100%;  }
+	</style>
+</head>
+<body>
+	<div id="map"></div>
+
+	<script src="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.js"></script>
+	<script>
+		var map = new L.Map('map', {center: new L.LatLng(37.892, 137.571), zoom: 6});
+
+		var google = L.tileLayer(
+			'http://mt0.google.com/vt/lyrs=m@121&hl=ja&x={x}&y={y}&z={z}'
+		).addTo(map);
+	</script>
+</body>
+</html>
